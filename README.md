@@ -1,10 +1,10 @@
 # honor-project-product-iot-tech
 Development and evaluation of a product management system using IoT technology to replace traditional barcodes
 
-[Client readme](./CLIENT/README.md)
-[Module readme](./escore/README.md)
-[Microservices readme](./SERVICES/README.md)
-[Readers readme](./READERS/README.md)
+- [Client readme](./CLIENT/README.md)
+- [Module readme](./escore/README.md)
+- [Microservices readme](./SERVICES/README.md)
+- [Readers readme](./READERS/README.md)
 
 The project aimed to answer the questions whether IoT technology can be used to replace barcodes and what benefits it can bring for both retail industry and this sector’s customers. Research had showed that best suited technology for this project is Beacon. Compared to other technologies, Beacon has the best data storage capabilities, uniqueness of the identifier, and even without its own standard for product management, it is still the most attractive technology. However, beacon technology is not ready to replace barcodes at the moment, as tags attached to products would require an external power supply. However, this technology is being continually developed and such a solution could soon be available. The potential to replace barcodes is shown by RFID technology, which significantly extends the capabilities of barcodes, although it is less competitive to Bluetooth-based technology.
 
