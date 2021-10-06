@@ -20,10 +20,12 @@ Microservice architecture is a method of developing an application composed of a
 
 The project involves implementing a microservices architecture to separate individual system components by functionality and purpose. The small size of each service and its single responsibility significantly improves the development and testability of individual modules. The architectural separation of application logic and data allows for the adaptation of the relevant database type to the service. This feature can help to manage problems with optimising individual services performance, which under the influence of excessive queries may require the implementation of a read-only database. Due to resource limitations, database partitioning within the prototype system has been replaced by simulating the same principle using different collections within a single instance of database. The services logic and data remain isolated, removing the responsibility to maintain database consistency between services, leaving to each individual service the responsibility for modelling, processing, and maintaining the data. The development of a microservices-based system allows for the continuous development of services and the constant delivery of new functionalities. Microservices can be implemented independently during each implementation phase without affecting other system components. 
 
+## Event sourcing
+
 ![image](https://user-images.githubusercontent.com/28375942/136289367-ef053fce-695e-401c-ad7f-ff606c7dbef0.png)
 ![image](https://user-images.githubusercontent.com/28375942/136289373-7eb03028-17b1-45a7-b92f-c3f8471ff122.png)
 
-## Event sourcing
+
 Event sourcing pattern is an event-centric approach that involves events to update states between services. Event sourcing provides consistent and persistent data exchange across services. The architecture pattern was designed to update the state by a sequence of events stored as an append-only transaction in the event store. An event is a general concept that describes performed actions and their origin as a fact of the past. The processing of the event history by the application allowed to restore and upkeep the "current" application states. 
 
 ![image](https://user-images.githubusercontent.com/28375942/136289419-a2d5e58e-18df-4c6a-b7a6-2fdaebef8df7.png)
