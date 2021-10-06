@@ -1,0 +1,207 @@
+version: '3'
+
+services:
+  nginx:
+    container_name: nginx
+    restart: always
+    image: nginx
+    ports:
+      - 4000:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+  web:
+    hostname: web
+    build: .
+    ports:
+      - 3001:3000
+    volumes:
+      - ./:/usr/src/app/
+      - /usr/src/app/node_modules
+      - /usr/src/app/share
+  main:
+    image: tagnametest
+    restart: always
+    ports:
+      - 4001:3000
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=MAIN_1
+      - CLIENT_ID=MN_1
+      - KAFKA_HOST=kafka:9092
+    links:
+      - mongo
+    depends_on:
+      - mongo
+
+  socket:
+    hostname: socket
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=SOCKET_1
+      - CLIENT_ID=SO_1
+      - KAFKA_HOST=kafka:9092
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/websocket.server.js
+
+  info:
+    hostname: info
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/server.js
+
+  present:
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=PRESENCE_1
+      - CLIENT_ID=PR_1
+      - KAFKA_HOST=kafka:9092
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/presence.server.js
+
+  stock:
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=STOCK_1
+      - CLIENT_ID=ST_1
+      - KAFKA_HOST=kafka:9092
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/stock.server.js
+
+  order:
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=ORDER_1
+      - CLIENT_ID=OR_1
+      - KAFKA_HOST=kafka:9092
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/order.server.js
+
+  inventory:
+    image: tagnametest
+    restart: always
+    environment:
+      - MONGOOSE_HOST=mongodb://root:example@mongo:27017/
+      - SERVER_PORT=3000
+      - KAFKA_GR=INVENTORY_1
+      - CLIENT_ID=IV_1
+      - KAFKA_HOST=kafka:9092
+      - REFRESH=120000
+      - TIMEOUT=20000
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    command: node build/inventory.server.js
+
+  zookeeper:
+    image: 'bitnami/zookeeper:3'
+    ports:
+      - '2181:2181'
+    volumes:
+      - '.docker-data/zookeeper_data:/bitnami'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka:2'
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    volumes:
+      - '.docker-data/kafka_data:/bitnami'
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+
+    depends_on:
+      - zookeeper
+
+
+  kafka-ui:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "3456:9000"
+    restart: always
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+      - JVM_OPTS=-Xms32M -Xmx64M
+    depends_on:
+      - kafka
+
+  portainerservice:
+    image: portainer/portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9000:9000"
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    volumes:
+      - .docker-data/mongo1:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=example
+
+  testmon:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    volumes:
+      - .docker-data/mongo_test:/data/db
